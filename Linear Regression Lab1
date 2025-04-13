@@ -1,0 +1,79 @@
+# Import necessary libraries
+import pandas as pd                      # For data manipulation and analysis
+import numpy as np                       # For numerical operations
+import matplotlib.pyplot as plt          # For data visualization
+
+# Importing libraries from scikit-learn for machine learning
+from sklearn.linear_model import LinearRegression      # For creating the linear regression model
+from sklearn.model_selection import train_test_split   # For splitting the dataset
+
+# Load the dataset
+data = pd.read_csv('marks.csv')         # Reading the CSV file containing study hours and scores
+
+# Display first few rows to understand the structure
+data.head()
+
+# Show the shape of the dataset (rows, columns)
+data.shape
+
+# Check for missing values in the dataset
+data.isnull().sum()
+
+# Fill missing values in 'Hours' column with the median value
+data['Hours'] = data['Hours'].fillna(data['Hours'].median())
+
+# Check again for missing values
+data.isnull().sum()
+
+# Fill missing values in 'Scores' column with the median value
+data['Scores'] = data['Scores'].fillna(data['Scores'].median())
+
+# Final check to confirm no missing values remain
+data.isnull().sum()
+
+# Define independent variable (X) and dependent variable (Y)
+x = data.iloc[:,:1].values      # Selecting 'Hours' column as feature
+y = data.iloc[:,1:2].values     # Selecting 'Scores' column as label
+
+# Split the dataset into training and testing sets (80% train, 20% test)
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=50)
+
+# Create a Linear Regression model
+model = LinearRegression()
+
+# Train the model using training data
+model.fit(x_train, y_train)
+
+# Predict the results using the testing data
+y_pred = model.predict(x_test)
+
+# Print predicted and actual values for comparison
+print(y_pred)
+print(y_test)
+
+# Plotting the training set results
+plt.scatter(x_train, y_train, color='green')                   # Actual training data points
+plt.plot(x_train, model.predict(x_train), color='red')         # Regression line
+plt.title('Hours vs Score (training set)')
+plt.xlabel('No of Hours Studying')
+plt.ylabel('Marks Acquired')
+plt.show()
+
+# Evaluate the model using different metrics
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+
+# Calculate evaluation metrics
+mae = mean_absolute_error(y_test, y_pred)           # Mean Absolute Error
+mse = mean_squared_error(y_test, y_pred)            # Mean Squared Error
+rmse = np.sqrt(mse)                                 # Root Mean Squared Error
+r2 = r2_score(y_test, y_pred)                       # R-squared Score
+
+# Print evaluation metrics
+print('Mean Absolute Error is: ', mae)
+print('Mean Squared Error is: ', mse)
+print('Root Mean Squared Error is: ', rmse)
+print('R2 score is: ', r2)
+
+# Print actual vs predicted values in flattened format for better readability
+print("Actual:", y_test.flatten())
+print("Predicted:", y_pred.flatten())
